@@ -19,13 +19,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Harden npm
+      - name: Harden npm (safe)
         run: |
-          npm config set registry https://registry.npmjs.org/
-          npm config set fetch-retries 5
-          npm config set fetch-retry-mintimeout 20000
-          npm config set fetch-retry-maxtimeout 120000
-          npm config set cache /tmp/npm-cache --global
+          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "fetch-retries=5" >> ~/.npmrc
+          echo "fetch-retry-mintimeout=20000" >> ~/.npmrc
+          echo "fetch-retry-maxtimeout=120000" >> ~/.npmrc
 
       - uses: ioBroker/testing-action-check@v1
         with:
@@ -42,13 +41,12 @@ jobs:
         os: [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
-      - name: Harden npm
+      - name: Harden npm (safe)
         run: |
-          npm config set registry https://registry.npmjs.org/
-          npm config set fetch-retries 5
-          npm config set fetch-retry-mintimeout 20000
-          npm config set fetch-retry-maxtimeout 120000
-          npm config set cache false
+          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "fetch-retries=5" >> ~/.npmrc
+          echo "fetch-retry-mintimeout=20000" >> ~/.npmrc
+          echo "fetch-retry-maxtimeout=120000" >> ~/.npmrc
 
       - uses: ioBroker/testing-action-adapter@v1
         with:
@@ -70,13 +68,12 @@ jobs:
       contents: write
 
     steps:
-      - name: Harden npm
+      - name: Harden npm (safe)
         run: |
-          npm config set registry https://registry.npmjs.org/
-          npm config set fetch-retries 5
-          npm config set fetch-retry-mintimeout 20000
-          npm config set fetch-retry-maxtimeout 120000
-          npm config set cache false
+          echo "registry=https://registry.npmjs.org/" >> ~/.npmrc
+          echo "fetch-retries=5" >> ~/.npmrc
+          echo "fetch-retry-mintimeout=20000" >> ~/.npmrc
+          echo "fetch-retry-maxtimeout=120000" >> ~/.npmrc
 
       - uses: ioBroker/testing-action-deploy@v1
         with:
