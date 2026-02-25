@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "grohe-smarthome",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "news": {
+      "0.2.4": {
+        "en": "Fix Points for Latest Repo\nUpdate Packages",
+        "de": "Fixpunkte für den neuesten Repo\nPakete aktualisieren",
+        "ru": "Настройка очков для последнего репо\nОбновление пакетов",
+        "pt": "Corrigir pontos para o último recurso\nAtualizar pacotes",
+        "nl": "Fix punten voor de laatste repo\nPakketten bijwerken",
+        "fr": "Correction de points pour la dernière repo\nMettre à jour les paquets",
+        "it": "Punti di fissaggio per ultimo Repo\nPacchetti di aggiornamento",
+        "es": "Puntos de fijación para la última repo\nPaquetes de actualización",
+        "pl": "Napraw punkty dla najnowszej repo\nAktualizacja pakietów",
+        "uk": "Виправлення точок для останнього репо\nОновлення пакетів",
+        "zh-cn": "最新Repo 的固定点\n更新软件包"
+      },
       "0.2.3": {
         "en": "Fix no correct messages",
         "de": "Keine korrekten Nachrichten",
@@ -80,19 +93,6 @@
         "pl": "Zmieniony poziom logowania\nAktualizacja Błąd obsługi - > zwiększenie timeout",
         "uk": "Змінений рівень\nUpdate Помилка Handling -> збільшення",
         "zh-cn": "更改的日志级别\n更新错误处理 - > 增加尝试超时"
-      },
-      "0.1.5": {
-        "en": "Update Dependencies",
-        "de": "Anpassungsabhängigkeiten",
-        "ru": "Обновление зависимостей",
-        "pt": "Atualizar dependências",
-        "nl": "Afhankelijkheden bijwerken",
-        "fr": "Mettre à jour les dépendances",
-        "it": "Dipendenze di aggiornamento",
-        "es": "Dependencias de actualización",
-        "pl": "Aktualizuj zależności",
-        "uk": "Оновлення залежностей",
-        "zh-cn": "更新依赖关系"
       }
     },
     "titleLang": {
