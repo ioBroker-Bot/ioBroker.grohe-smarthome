@@ -726,7 +726,7 @@ class GroheSmarthome extends utils.Adapter {
 
 					if (newTimestamp && newTimestamp !== oldTimestamp) {
 						const newM = details.data_latest.measurement || {};
-						this.log.info(
+						this.log.debug(
 							`Blue ${applianceId}: fresh data received (old=${oldTimestamp}, new=${newTimestamp})`,
 						);
 						// Update states immediately with the fresh measurement data.
