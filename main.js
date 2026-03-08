@@ -691,12 +691,20 @@ class GroheSmarthome extends utils.Adapter {
 	/* ================================================================== */
 
 	/**
-	 * Start a non-blocking background loop that polls /details until a newer
-	 * measurement timestamp appears (or gives up after 30s).
+	 * Start a non-blocking background loop that polls the /dashboard endpoint
+	 * until a newer measurement timestamp appears (or gives up after 50s).
 	 *
 	 * This mirrors the HA ha-grohe_smarthome BlueHomeCoordinator pattern:
 	 * after sending get_current_measurement, the Grohe cloud needs time to
-	 * fetch data from the device. We poll every 10s up to 3 times.
+	 * fetch data from the device. We poll every 10s up to 5 times.
+	 *
+	 * IMPORTANT: The HA integration's get_appliance_details() is misleadingly
+	 * named – it actually calls /dashboard (not /details) and filters locally.
+	 * The real /details endpoint returns different (often stale) measurement
+	 * data. We therefore use /dashboard here as well.
+	 *
+	 * After detecting a new timestamp we wait one extra interval to let all
+	 * values (especially remaining_filter) propagate before writing states.
 	 *
 	 * A guard flag prevents multiple concurrent verify loops for the same device.
 	 */
@@ -723,9 +731,18 @@ class GroheSmarthome extends utils.Adapter {
 						return;
 					}
 
-					const details = await this.client.getApplianceDetails(locationId, roomId, applianceId);
-					const newTimestamp = details?.data_latest?.measurement?.timestamp;
-					const newM = details?.data_latest?.measurement || {};
+					// Use /dashboard (like the HA integration) – NOT /details which
+					// returns different and often stale measurement data.
+					const dashboard = await this.client.getDashboard();
+					const appliance = this._findApplianceInDashboard(dashboard, applianceId);
+					if (!appliance) {
+						this.log.debug(`Blue verify for ${applianceId}: appliance not found in dashboard`);
+						this._blueRefreshRunning.delete(applianceId);
+						return;
+					}
+
+					const newTimestamp = appliance.data_latest?.measurement?.timestamp;
+					const newM = appliance.data_latest?.measurement || {};
 
 					if (newTimestamp && newTimestamp !== oldTimestamp) {
 						if (!timestampChanged) {
@@ -782,6 +799,26 @@ class GroheSmarthome extends utils.Adapter {
 		};
 
 		poll();
+	}
+
+	/**
+	 * Find a specific appliance in the dashboard response by its ID.
+	 * The dashboard structure is: { locations: [{ rooms: [{ appliances: [...] }] }] }
+	 */
+	_findApplianceInDashboard(dashboard, applianceId) {
+		if (!dashboard?.locations) {
+			return null;
+		}
+		for (const loc of dashboard.locations) {
+			for (const room of loc.rooms || []) {
+				for (const app of room.appliances || []) {
+					if (app.appliance_id === applianceId) {
+						return app;
+					}
+				}
+			}
+		}
+		return null;
 	}
 
 	/* ================================================================== */
