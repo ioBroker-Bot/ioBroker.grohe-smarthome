@@ -1,4 +1,3 @@
-<img src="admin/grohe-smarthome.png" alt="Logo" width="256" />
 # ioBroker.grohe-smarthome
 
 [![NPM version](https://img.shields.io/npm/v/iobroker.grohe-smarthome.svg)](https://www.npmjs.com/package/iobroker.grohe-smarthome)
@@ -11,8 +10,8 @@
 **Tests:** ![Test and Release](https://github.com/patricknitsch/ioBroker.grohe-smarthome/workflows/Test%20and%20Release/badge.svg)
 
 # ioBroker Grohe Smarthome Adapter
-
-This adapter connects ioBroker to the **Grohe Smarthome / Ondus** cloud and exposes Grohe devices as states (and some controls) inside ioBroker.
+<img align="left" src="admin/grohe-smarthome.png" alt="image" width="200"/>
+This adapter connects ioBroker to the <strong>Grohe Smarthome / Ondus</strong> cloud and exposes Grohe devices as states (and some controls) inside ioBroker.
 
 It supports:
 
@@ -22,6 +21,8 @@ It supports:
 - **Grohe Blue Professional** (type `105`)
 
 The adapter logs in via Grohe’s OIDC/Keycloak flow, stores a **refresh token encrypted** in a state, and polls the Grohe cloud API on a configurable interval.
+
+Ideas and Concept came from the Home-Assistant Integration **ha-grohe_smarthome**. Special thanks goes to **Flo-Schilli**. 
 
 ---
 ## Documentation
@@ -37,6 +38,11 @@ The adapter logs in via Grohe’s OIDC/Keycloak flow, stores a **refresh token e
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+
+### **WORK IN PROGRESS**
+
+* (claude/patricknitsch) Fix measurement "Filter" for Blue Systems
+
 ### 0.2.5 (2026-02-26)
 
 * (patricknitsch) Update Admin Package
