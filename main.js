@@ -558,31 +558,11 @@ class GroheSmarthome extends utils.Adapter {
 		const typeStr = type === GROHE_BLUE_HOME ? 'Blue Home' : 'Blue Professional';
 		await this._ensureDevice(id, `${name} (${typeStr})`, typeStr.toUpperCase().replace(' ', '_'));
 
-		// Fetch measurement data from /details endpoint (like the HA integration).
-		// The /dashboard endpoint often returns stale remaining_filter / remaining_co2
-		// values, while /details provides the same data the GROHE app displays.
-		let m = appliance.data_latest?.measurement || {};
-		this.log.debug(
-			`Blue ${id} /dashboard measurement: ${JSON.stringify(appliance.data_latest?.measurement)}`,
-		);
-		if (locationId && roomId && this.client) {
-			try {
-				const details = await this.client.getApplianceDetails(locationId, roomId, id);
-				this.log.debug(`Blue ${id} /details raw response keys: ${JSON.stringify(Object.keys(details || {}))}`);
-				this.log.debug(
-					`Blue ${id} /details data_latest keys: ${JSON.stringify(Object.keys(details?.data_latest || {}))}`,
-				);
-				this.log.debug(
-					`Blue ${id} /details measurement: ${JSON.stringify(details?.data_latest?.measurement)}`,
-				);
-				const detailsM = details?.data_latest?.measurement;
-				if (detailsM) {
-					m = detailsM;
-				}
-			} catch (err) {
-				this.log.warn(`Details query for Blue ${id} failed, using dashboard data: ${err.message}`);
-			}
-		}
+		// Use the measurement data supplied by /dashboard.  The background verify
+		// loop (_startBlueVerify) fetches /details after get_current_measurement
+		// to pick up fresh readings; there is no need to call /details here too.
+		const m = appliance.data_latest?.measurement || {};
+		this.log.debug(`Blue ${id} /dashboard measurement: ${JSON.stringify(appliance.data_latest?.measurement)}`);
 
 		// Blue devices do NOT push measurements automatically – the device must
 		// be explicitly asked via get_current_measurement (the Grohe app does this too).
@@ -597,7 +577,7 @@ class GroheSmarthome extends utils.Adapter {
 
 				// Start background verify loop to wait for fresh data from /details.
 				// The Grohe cloud needs time to process the measurement request.
-				// We poll /details up to 5 times (every 10s).
+				// We poll /details up to 3 times (every 10s, max 30s).
 				this._startBlueVerify(id, locationId, roomId, oldTimestamp);
 			} catch (err) {
 				this.log.warn(`Measurement refresh for Blue ${id} failed: ${err.message}`);
@@ -621,7 +601,14 @@ class GroheSmarthome extends utils.Adapter {
 		// CO2 & Filter
 		await this._setNum(id, 'remainingCo2', 'Remaining CO₂', '%', 'value.fill', m.remaining_co2);
 		await this._setNum(id, 'remainingFilter', 'Remaining filter', '%', 'value.fill', m.remaining_filter);
-		await this._setNum(id, 'remainingCo2Liters', 'Remaining CO₂ (liters)', 'l', 'value.fill', m.remaining_co2_liters);
+		await this._setNum(
+			id,
+			'remainingCo2Liters',
+			'Remaining CO₂ (liters)',
+			'l',
+			'value.fill',
+			m.remaining_co2_liters,
+		);
 		await this._setNum(
 			id,
 			'remainingFilterLiters',
@@ -699,6 +686,12 @@ class GroheSmarthome extends utils.Adapter {
 		);
 		await this._ensureWritableNum(`${id}.controls`, 'tapAmount', 'Amount (ml, multiples of 50)', 'level', 250);
 		await this._ensureWritableBool(`${id}.controls`, 'dispenseTrigger', 'Dispense', 'button');
+		// On the first poll after adapter startup, reset tap controls to 0 to clear any stale values
+		// from a previous session that could cause unintended dispensing.
+		if (this.pollCount === 1) {
+			await this.setState(`${id}.controls.tapType`, { val: 0, ack: true });
+			await this.setState(`${id}.controls.tapAmount`, { val: 0, ack: true });
+		}
 		await this._ensureWritableBool(`${id}.controls`, 'resetCo2', 'Reset CO₂', 'button');
 		await this._ensureWritableBool(`${id}.controls`, 'resetFilter', 'Reset filter', 'button');
 
@@ -888,6 +881,10 @@ class GroheSmarthome extends utils.Adapter {
 				this.log.info(`Dispensing: type=${tapType} amount=${tapAmount}ml for ${applianceId}`);
 				await this.client.tapWater(locationId, roomId, applianceId, tapType, tapAmount);
 				await this.setState(stateId, { val: false, ack: true });
+				// Reset tap controls to 0 after dispense to confirm command was consumed
+				// and to prevent accidental re-use of stale values.
+				await this.setState(`${this.namespace}.${applianceId}.controls.tapType`, { val: 0, ack: true });
+				await this.setState(`${this.namespace}.${applianceId}.controls.tapAmount`, { val: 0, ack: true });
 				return;
 			}
 			// Blue: reset CO2
