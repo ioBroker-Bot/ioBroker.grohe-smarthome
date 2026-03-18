@@ -38,7 +38,7 @@ Im Toolbar-Dropdown ein registriertes Grohe-Gerät auswählen, um die zugehörig
 
 ### Steuerungen
 
-Steuerungen werden **automatisch deaktiviert**, wenn das Gerät als offline gemeldet wird.
+Steuerungen werden **automatisch deaktiviert**, wenn das Gerät als offline gemeldet wird. Jede Schaltfläche zeigt vor der Ausführung einen **Bestätigungsdialog**.
 
 **Grohe Sense Guard**
 - Ventil öffnen / Ventil schließen

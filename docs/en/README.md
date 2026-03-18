@@ -38,7 +38,7 @@ Select a registered Grohe appliance from the toolbar dropdown to display its **d
 
 ### Controls
 
-Controls are **automatically disabled** when the device is reported offline.
+Controls are **automatically disabled** when the device is reported offline. Each control button shows a **confirmation dialog** before executing the action.
 
 **Grohe Sense Guard**
 - Open valve / Close valve
