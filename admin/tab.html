@@ -36,10 +36,12 @@
         .config-btn:hover{background:var(--accent);color:var(--bg)}
         .device-group{margin-bottom:32px}
         .group-title{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;
-            margin-bottom:14px;color:var(--text)}
-        .group-icon{width:18px;height:18px;border-radius:50%;flex-shrink:0}
-        .sense-icon{background:var(--sense-accent)}.guard-icon{background:var(--guard-accent)}
-        .blue-icon{background:var(--blue-accent)}
+            margin-bottom:14px;color:#fff;
+            background:var(--accent);padding:10px 16px;border-radius:8px;
+            box-shadow:0 2px 6px rgba(0,0,0,.18)}
+        body.dark .group-title{background:var(--accent);color:#fff}
+        .group-icon{width:16px;height:16px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.45)}
+        .sense-icon{}.guard-icon{}.blue-icon{}
         .device-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;
             box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
         .card-header{display:flex;align-items:center;gap:12px;padding:14px 18px;
@@ -704,7 +706,41 @@ if(n)devices[uuid].name=String(n);}}).catch(function(){});
 })).then(function(){render(devices);});
 }).catch(function(err){showError(err&&err.message?err.message:String(err));});}
 document.getElementById('loading').textContent=T.loading;
-if(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches){document.body.classList.add('dark');}
+// ── Dark-mode detection (matches reference ioBroker.schlueter-thermostat) ──
+var DARK_THEME_NAMES=['dark','blue'];
+function applyTheme(isDark){document.body.classList.toggle('dark',!!isDark);}
+function resolveTheme(){
+try{var t=localStorage.getItem('App.theme');if(t)return t==='dark';
+var n=localStorage.getItem('App.themeName');if(n)return DARK_THEME_NAMES.indexOf(n)>=0;}catch(_e){}
+try{var body=window.parent&&window.parent.document&&window.parent.document.body;
+var html=window.parent&&window.parent.document&&window.parent.document.documentElement;
+if(body){if((body.className||'').toLowerCase().indexOf('dark')>=0)return true;
+if(html&&(html.className||'').toLowerCase().indexOf('dark')>=0)return true;
+if(body.getAttribute('data-theme')==='dark')return true;
+if(html&&html.getAttribute('data-theme')==='dark')return true;
+if(body.getAttribute('data-bs-theme')==='dark')return true;}}catch(_e){}
+try{var p=window.parent;var candidates=[
+p&&p.document&&p.document.getElementById('root'),
+p&&p.document&&p.document.querySelector('.App'),
+p&&p.document&&p.document.body].filter(Boolean);
+for(var i=0;i<candidates.length;i++){var bg=p.getComputedStyle(candidates[i]).backgroundColor;
+var m=bg&&bg.match(/[\d.]+/g);if(m&&m.length>=3){var a=m.length>=4?parseFloat(m[3]):1;
+if(a>0){var avg=(parseInt(m[0])+parseInt(m[1])+parseInt(m[2]))/3;if(avg<80)return true;}}}}catch(_e){}
+return false;}
+function detectTheme(){try{var params=new URLSearchParams(window.location.search);
+var react=params.get('react');if(react!==null){applyTheme(DARK_THEME_NAMES.indexOf(react)>=0);return;}}catch(_e){}
+applyTheme(resolveTheme());}
+function watchTheme(){
+window.addEventListener('storage',function(e){if(e.key==='App.theme'){applyTheme(e.newValue==='dark');}
+else if(e.key==='App.themeName'){applyTheme(DARK_THEME_NAMES.indexOf(e.newValue)>=0);}});
+window.addEventListener('message',function(e){if(e.data==='updateTheme')applyTheme(resolveTheme());});
+try{var targets=[window.parent&&window.parent.document&&window.parent.document.body,
+window.parent&&window.parent.document&&window.parent.document.documentElement].filter(Boolean);
+if(targets.length){var obs=new MutationObserver(function(){applyTheme(resolveTheme());});
+for(var i=0;i<targets.length;i++){obs.observe(targets[i],{attributes:true,attributeFilter:['class','data-theme','data-bs-theme','style']});}}}catch(_e){}
+var _lastDark=document.body.classList.contains('dark');
+setInterval(function(){var d=resolveTheme();if(d!==_lastDark){_lastDark=d;applyTheme(d);}},5000);}
+detectTheme();watchTheme();
 initSocket().then(function(){load();setInterval(load,REFRESH_INTERVAL_MS);})
 .catch(function(err){showError(err&&err.message?err.message:T.noConn);});
 }());
