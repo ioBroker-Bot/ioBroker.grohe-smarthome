@@ -38,6 +38,13 @@ Ideas and Concept came from the Home-Assistant Integration **ha-grohe_smarthome*
 	Placeholder for the next version (at the beginning of the line):
 	### **WORK IN PROGRESS**
 -->
+### **WORK IN PROGRESS**
+
+* (claude/patricknitsch) Add card-based device overview tab with controls
+* (claude/patricknitsch) Add Valve, Pressure Measurement and Dispense controls in admin tab
+* (claude/patricknitsch) Disable controls when device is offline
+* (claude/patricknitsch) Adjust color scheme in admin tab (white/black based on light/dark mode)
+
 ### 0.2.6 (2026-03-11)
 
 * (claude/patricknitsch) Fix measurement "Filter" for Blue Systems

@@ -147,6 +147,24 @@
     "adminUI": {
       "config": "json"
     },
+    "adminTab": {
+      "singleton": false,
+      "name": {
+        "en": "Device Overview",
+        "de": "Ger\u00e4te\u00fcbersicht",
+        "ru": "\u041e\u0431\u0437\u043e\u0440 \u0443\u0441\u0442\u0440\u043e\u0439\u0441\u0442\u0432",
+        "pt": "Vis\u00e3o geral dos dispositivos",
+        "nl": "Apparaatoverzicht",
+        "fr": "Aper\u00e7u des appareils",
+        "it": "Panoramica dispositivi",
+        "es": "Resumen de dispositivos",
+        "pl": "Przegl\u0105d urz\u0105dze\u0144",
+        "uk": "\u041e\u0433\u043b\u044f\u0434 \u043f\u0440\u0438\u0441\u0442\u0440\u043e\u0457\u0432",
+        "zh-cn": "\u8bbe\u5907\u6982\u89c8"
+      },
+      "link": "",
+      "fa-icon": "tint"
+    },
     "dependencies": [
       {
         "js-controller": ">=6.0.11"
