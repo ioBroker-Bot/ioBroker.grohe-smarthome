@@ -556,8 +556,8 @@ var title=document.createElement('div');title.className='sec-title';title.textCo
 if(!online){var hint=document.createElement('div');hint.className='offline-hint';hint.textContent='\u26a0\ufe0f '+T.offlineHint;sec.appendChild(hint);}
 var row=document.createElement('div');row.className='ctrl-btns';
 var btnOpen=_makeBtn('\ud83d\udfe2 '+T.btnValveOpen,'success',function(){_confirm(T.confirmAction,function(){_sendState(NS+'.'+uuid+'.controls.valveOpen',true,T.btnValveOpen+': OK');});});
-var btnClose=_makeBtn('\ud83d\udd34 '+T.btnValveClose,'danger',function(){_confirm(T.confirmAction,function(){_sendState(NS+'.'+uuid+'.controls.valveOpen',false,T.btnValveClose+': OK');});});
-var btnMeasure=_makeBtn('\ud83d\udcca '+T.btnMeasure,'primary',function(){_confirm(T.confirmAction,function(){_sendState(NS+'.'+uuid+'.controls.pressureMeasurement',true,T.btnMeasure+': OK');});});
+var btnClose=_makeBtn('\ud83d\udd34 '+T.btnValveClose,'danger',function(){_confirm(T.confirmAction,function(){_sendState(NS+'.'+uuid+'.controls.valveClose',true,T.btnValveClose+': OK');});});
+var btnMeasure=_makeBtn('\ud83d\udcca '+T.btnMeasure,'primary',function(){_confirm(T.confirmAction,function(){_sendState(NS+'.'+uuid+'.controls.startPressureMeasurement',true,T.btnMeasure+': OK');});});
 if(!online){btnOpen.disabled=true;btnClose.disabled=true;btnMeasure.disabled=true;}
 row.appendChild(btnOpen);row.appendChild(btnClose);row.appendChild(btnMeasure);
 sec.appendChild(row);card.appendChild(sec);}
@@ -586,9 +586,9 @@ _setState(NS+'.'+uuid+'.controls.tapType',parseInt(tsel.value)||1).then(function
 return _setState(NS+'.'+uuid+'.controls.tapAmount',parseInt(ainp.value)||200);}).then(function(){
 return _sendState(NS+'.'+uuid+'.controls.dispenseTrigger',true,T.btnDispense+': OK');}).catch(function(e){showToast(T.toastError+(e&&e.message?e.message:String(e)),'error');});});});
 var btnCo2=_makeBtn('\u267b\ufe0f '+T.btnResetCo2,'primary',function(){
-_confirm(T.confirmReset+' (CO\u2082)',function(){_sendState(NS+'.'+uuid+'.controls.co2EmptyTrigger',true,T.btnResetCo2+': OK');});});
+_confirm(T.confirmReset+' (CO\u2082)',function(){_sendState(NS+'.'+uuid+'.controls.resetCo2',true,T.btnResetCo2+': OK');});});
 var btnFilt=_makeBtn('\ud83d\udebf '+T.btnResetFilter,'primary',function(){
-_confirm(T.confirmReset+' (Filter)',function(){_sendState(NS+'.'+uuid+'.controls.filterEmptyTrigger',true,T.btnResetFilter+': OK');});});
+_confirm(T.confirmReset+' (Filter)',function(){_sendState(NS+'.'+uuid+'.controls.resetFilter',true,T.btnResetFilter+': OK');});});
 if(!online){btnD.disabled=true;btnCo2.disabled=true;btnFilt.disabled=true;}
 brow.appendChild(btnD);brow.appendChild(btnCo2);brow.appendChild(btnFilt);
 sec.appendChild(brow);card.appendChild(sec);}
