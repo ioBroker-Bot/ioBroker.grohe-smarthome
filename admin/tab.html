@@ -3,112 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grohe Smarthome – Device Overview</title>
+    <title>Grohe Smarthome</title>
     <script src="../../socket.io/socket.io.js"></script>
     <style>
-        :root{--bg:#f5f5f5;--surface:#ffffff;--surface2:#f0f0f0;--text:#212121;--text-muted:#757575;
-        --accent:#1565c0;--border:#e0e0e0;--shadow:0 2px 8px rgba(0,0,0,.1);
-        --sense-accent:#1976d2;--guard-accent:#1565c0;--blue-accent:#00838f;
-        --warn:#f57c00;--danger:#d32f2f;--success:#388e3c;
-        --btn-primary:#1565c0;--btn-primary-h:#0d47a1;--btn-success:#388e3c;--btn-success-h:#2e7d32;
-        --btn-danger:#d32f2f;--btn-danger-h:#b71c1c;
-        --valve-open-bg:rgba(56,142,60,.13);--valve-open-fg:#388e3c;
-        --valve-closed-bg:rgba(211,47,47,.13);--valve-closed-fg:#d32f2f;}
-        body.dark{--bg:#121212;--surface:#1e1e1e;--surface2:#252525;--text:#e0e0e0;--text-muted:#9e9e9e;
-        --accent:#42a5f5;--border:#333;--shadow:0 2px 8px rgba(0,0,0,.5);
-        --sense-accent:#42a5f5;--guard-accent:#42a5f5;--blue-accent:#26c6da;
-        --warn:#ffa726;--danger:#ef5350;--success:#66bb6a;
-        --btn-primary:#1e88e5;--btn-primary-h:#1565c0;--btn-success:#43a047;--btn-success-h:#2e7d32;
-        --btn-danger:#ef5350;--btn-danger-h:#c62828;
-        --valve-open-bg:rgba(102,187,106,.18);--valve-open-fg:#66bb6a;
-        --valve-closed-bg:rgba(239,83,80,.18);--valve-closed-fg:#ef5350;}
+        :root{--primary:#1565c0;--primary-dark:#0d47a1;--bg:#f5f5f5;--card-bg:#ffffff;
+        --text:#212121;--text-secondary:#757575;--border:#e0e0e0;
+        --success:#388e3c;--success-dark:#2e7d32;--warning:#f57c00;
+        --danger:#d32f2f;--danger-dark:#b71c1c;
+        --radius:8px;--shadow:0 2px 8px rgba(0,0,0,.1);}
+        body.dark{--bg:#121212;--card-bg:#1e1e1e;--text:#e0e0e0;--text-secondary:#9e9e9e;
+        --border:#333;--shadow:0 2px 8px rgba(0,0,0,.5);
+        --success:#66bb6a;--success-dark:#43a047;--warning:#ffa726;
+        --danger:#ef5350;--danger-dark:#c62828;}
         *{box-sizing:border-box;margin:0;padding:0}
         html,body{background-color:var(--bg)!important}
-        body{font-family:Roboto,-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;
-            background:var(--bg)!important;color:var(--text);padding:20px;font-size:14px;min-height:100vh}
-        .intro-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;
-            flex-wrap:wrap;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
-        .intro-text{font-size:14px;color:var(--text-muted);flex:1;min-width:200px}
-        .config-btn{display:inline-flex;align-items:center;gap:6px;background:transparent;color:var(--accent);
-            border:1.5px solid var(--accent);border-radius:6px;padding:7px 16px;cursor:pointer;
-            font-size:13px;font-weight:600;white-space:nowrap;flex-shrink:0;font-family:inherit;
-            transition:background .15s,color .15s}
-        .config-btn:hover{background:var(--accent);color:var(--bg)}
-        .device-group{margin-bottom:32px}
-        .group-title{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:700;
-            margin-bottom:14px;color:#fff;
-            background:var(--accent);padding:10px 16px;border-radius:8px;
-            box-shadow:0 2px 6px rgba(0,0,0,.18)}
-        body.dark .group-title{background:var(--accent);color:#fff}
-        .group-icon{width:16px;height:16px;border-radius:50%;flex-shrink:0;background:rgba(255,255,255,.45)}
-        .sense-icon{}.guard-icon{}.blue-icon{}
-        .device-card{background:var(--surface);border:1px solid var(--border);border-radius:10px;
+        body{font-family:Roboto,Arial,sans-serif;background:var(--bg)!important;color:var(--text);font-size:14px}
+        /* ── TOOLBAR ── */
+        #toolbar{background:var(--primary);color:#fff;padding:10px 16px;display:flex;
+            align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 2px 4px rgba(0,0,0,.3)}
+        #toolbar .logo{font-size:18px;font-weight:500;white-space:nowrap}
+        #toolbar select{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);
+            border-radius:4px;padding:5px 8px;font-size:13px;cursor:pointer;min-width:200px}
+        #toolbar select option{background:var(--primary-dark);color:#fff}
+        #toolbar label{font-size:12px;opacity:.8;white-space:nowrap}
+        #toolbar .spacer{flex:1}
+        #connStatus{font-size:12px;display:flex;align-items:center;gap:5px;white-space:nowrap}
+        #connStatus .dot{width:10px;height:10px;border-radius:50%;background:#9e9e9e;display:inline-block}
+        #connStatus.online .dot{background:#69f0ae}
+        #connStatus.offline .dot{background:#ef5350}
+        .btn-toolbar{background:rgba(255,255,255,.2);color:#fff;border:1px solid rgba(255,255,255,.5);
+            border-radius:4px;padding:6px 14px;font-size:13px;font-weight:500;cursor:pointer;
+            white-space:nowrap;transition:background .2s;font-family:inherit}
+        .btn-toolbar:hover{background:rgba(255,255,255,.35)}
+        /* ── MAIN ── */
+        #main{padding:16px}
+        #loading{text-align:center;padding:60px;color:var(--text-secondary);font-size:16px}
+        #loading::after{content:'';display:block;width:32px;height:32px;border:3px solid var(--border);
+            border-top-color:var(--primary);border-radius:50%;animation:spin .9s linear infinite;margin:16px auto 0}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        #error-msg{background:rgba(239,83,80,.12);border:1px solid rgba(239,83,80,.4);color:var(--danger);
+            padding:12px 16px;border-radius:var(--radius);margin-bottom:16px;display:none;font-size:13px}
+        #refresh-info{font-size:11px;color:var(--text-secondary);text-align:right;margin-top:8px}
+        #placeholder{text-align:center;padding:60px 20px;color:var(--text-secondary);font-size:15px;display:none}
+        /* ── DEVICE CARD ── */
+        .device-card{background:var(--card-bg);border-radius:var(--radius);
             box-shadow:var(--shadow);margin-bottom:16px;overflow:hidden}
         .card-header{display:flex;align-items:center;gap:12px;padding:14px 18px;
-            background:var(--surface2);border-bottom:1px solid var(--border);flex-wrap:wrap}
-        .dot{display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--accent);
-            box-shadow:0 0 6px var(--accent);flex-shrink:0}
-        .dot.inactive{background:#888;box-shadow:none}
-        .card-device-name{font-size:16px;font-weight:700;flex:1;min-width:120px}
-        .valve-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 12px;
-            border-radius:14px;font-size:13px;font-weight:700;letter-spacing:.02em}
-        .valve-badge-open{background:var(--valve-open-bg);color:var(--valve-open-fg)}
-        .valve-badge-closed{background:var(--valve-closed-bg);color:var(--valve-closed-fg)}
-        .valve-badge-dot{width:8px;height:8px;border-radius:50%;background:currentColor}
+            background:var(--primary);flex-wrap:wrap}
+        .dot-status{display:inline-block;width:11px;height:11px;border-radius:50%;
+            background:#69f0ae;box-shadow:0 0 5px rgba(105,240,174,.7);flex-shrink:0}
+        .dot-status.inactive{background:rgba(255,255,255,.35);box-shadow:none}
+        .card-device-name{font-size:16px;font-weight:700;flex:1;min-width:120px;color:#fff}
+        .valve-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;
+            border-radius:12px;font-size:12px;font-weight:700}
+        .valve-badge-open{background:rgba(105,240,174,.2);color:#b9f6ca}
+        .valve-badge-closed{background:rgba(255,82,82,.25);color:#ff8a80}
+        .valve-badge-dot{width:7px;height:7px;border-radius:50%;background:currentColor}
         .update-badge{display:inline-block;padding:3px 9px;border-radius:12px;font-size:11px;
-            font-weight:600;background:rgba(255,152,0,.18);color:var(--warn)}
+            font-weight:600;background:rgba(255,193,7,.25);color:#ffe082}
         .data-section{padding:12px 18px;border-bottom:1px solid var(--border)}
         .data-section:last-child{border-bottom:none}
         .sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
-            color:var(--text-muted);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+            color:var(--text-secondary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
         .sec-title::after{content:'';flex:1;height:1px;background:var(--border)}
         .prop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px 16px}
         .prop-item{display:flex;flex-direction:column;gap:2px}
-        .prop-label{font-size:11px;color:var(--text-muted);font-weight:500}
+        .prop-label{font-size:11px;color:var(--text-secondary);font-weight:500}
         .prop-value{font-size:13px;font-weight:600;color:var(--text)}
-        .prop-value.ok{color:var(--success)}.prop-value.warn{color:var(--warn)}.prop-value.danger{color:var(--danger)}
+        .prop-value.ok{color:var(--success)}.prop-value.warn{color:var(--warning)}.prop-value.danger{color:var(--danger)}
         .progress-wrap{display:flex;align-items:center;gap:8px}
         .progress-track{flex:1;height:7px;background:var(--border);border-radius:4px;
             overflow:hidden;min-width:60px;max-width:120px}
-        .progress-fill{height:100%;border-radius:4px;background:var(--accent);transition:width .4s}
+        .progress-fill{height:100%;border-radius:4px;background:var(--primary);transition:width .4s}
         .progress-label{font-size:12px;font-weight:700;white-space:nowrap}
         .notif-row{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap}
         .notif-message{flex:1;min-width:200px}
-        .notif-time{font-size:12px;color:var(--text-muted);white-space:nowrap}
+        .notif-time{font-size:12px;color:var(--text-secondary);white-space:nowrap}
         .notif-category{display:inline-block;padding:2px 7px;border-radius:10px;font-size:11px;
-            font-weight:600;margin-right:6px;background:rgba(41,182,246,.12);color:var(--accent)}
-        .notif-category.alarm{background:rgba(239,83,80,.15);color:var(--danger)}
-        .notif-category.warning{background:rgba(255,152,0,.15);color:var(--warn)}
-        #loading{text-align:center;padding:60px;color:var(--text-muted);font-size:16px}
-        #loading::after{content:'';display:block;width:32px;height:32px;border:3px solid var(--border);
-            border-top-color:var(--accent);border-radius:50%;animation:spin .9s linear infinite;margin:16px auto 0}
-        @keyframes spin{to{transform:rotate(360deg)}}
-        #error-msg{background:rgba(239,83,80,.12);border:1px solid rgba(239,83,80,.4);color:#ef5350;
-            padding:12px 16px;border-radius:6px;margin-bottom:16px;display:none;font-size:13px}
-        #refresh-info{font-size:11px;color:var(--text-muted);text-align:right;margin-top:8px}
-        #content{display:none}
-        #no-devices{text-align:center;color:var(--text-muted);padding:40px;font-size:14px;display:none}
-        /* ── CONTROLS SECTION ── */
-        .ctrl-section{padding:16px 18px;border-bottom:1px solid var(--border);background:var(--surface2)}
+            font-weight:600;margin-right:6px;background:rgba(21,101,192,.12);color:var(--primary)}
+        .notif-category.alarm{background:rgba(211,47,47,.15);color:var(--danger)}
+        .notif-category.warning{background:rgba(245,124,0,.15);color:var(--warning)}
+        /* ── CONTROLS ── */
+        .ctrl-section{padding:16px 18px;border-bottom:1px solid var(--border)}
         .ctrl-section:last-child{border-bottom:none}
         .ctrl-btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
         .ctrl-field-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px}
         .ctrl-field-group{display:flex;flex-direction:column;gap:4px}
-        .ctrl-field-label{font-size:11px;color:var(--text-muted);font-weight:500}
+        .ctrl-field-label{font-size:11px;color:var(--text-secondary);font-weight:500}
         .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
-            padding:10px 20px;border:none;border-radius:4px;font-size:14px;font-weight:500;
-            cursor:pointer;transition:background .2s,opacity .2s;font-family:inherit;
-            white-space:nowrap;min-width:140px}
-        .btn-primary{background:var(--btn-primary);color:#fff}
-        .btn-primary:hover:not(:disabled){background:var(--btn-primary-h)}
-        .btn-success{background:var(--btn-success);color:#fff}
-        .btn-success:hover:not(:disabled){background:var(--btn-success-h)}
-        .btn-danger{background:var(--btn-danger);color:#fff}
-        .btn-danger:hover:not(:disabled){background:var(--btn-danger-h)}
+            padding:8px 18px;border:none;border-radius:4px;font-size:14px;font-weight:500;
+            cursor:pointer;transition:background .2s,opacity .2s;font-family:inherit;white-space:nowrap}
+        .btn-primary{background:var(--primary);color:#fff}
+        .btn-primary:hover:not(:disabled){background:var(--primary-dark)}
+        .btn-success{background:var(--success);color:#fff}
+        .btn-success:hover:not(:disabled){background:var(--success-dark)}
+        .btn-danger{background:var(--danger);color:#fff}
+        .btn-danger:hover:not(:disabled){background:var(--danger-dark)}
         .btn:disabled{opacity:.38;cursor:not-allowed}
-        .ctrl-select,.ctrl-input{padding:9px 12px;border-radius:4px;border:1px solid var(--border);
-            background:var(--surface);color:var(--text);font-size:14px;font-family:inherit}
-        .ctrl-select:focus,.ctrl-input:focus{outline:none;border-color:var(--accent)}
+        .ctrl-select,.ctrl-input{padding:7px 10px;border-radius:4px;border:1px solid var(--border);
+            background:var(--card-bg);color:var(--text);font-size:14px;font-family:inherit}
+        .ctrl-select:focus,.ctrl-input:focus{outline:none;border-color:var(--primary)}
         .ctrl-select:disabled,.ctrl-input:disabled{opacity:.38;cursor:not-allowed}
         .ctrl-input{width:100px}
         .offline-hint{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600;
@@ -117,35 +111,37 @@
         body.dark .offline-hint{background:rgba(239,83,80,.12)}
         /* ── TOAST ── */
         #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
-            background:#323232;color:#fff;padding:12px 24px;border-radius:4px;font-size:14px;
+            background:#323232;color:#fff;padding:10px 24px;border-radius:4px;font-size:14px;
             transition:transform .3s;z-index:9999;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,.4)}
         #toast.show{transform:translateX(-50%) translateY(0)}
-        #toast.error{background:var(--btn-danger)}
-        #toast.success{background:var(--btn-success)}
+        #toast.error{background:var(--danger)}
+        #toast.success{background:var(--success)}
+        @media(max-width:480px){#main{padding:10px}}
     </style>
 </head>
 <body>
 <div id="toast"></div>
 <div id="error-msg"></div>
-<div id="loading"></div>
-<div id="content">
-    <div class="intro-bar">
-        <span id="intro-text" class="intro-text"></span>
-        <button class="config-btn" id="config-btn"></button>
+<!-- TOOLBAR -->
+<div id="toolbar">
+    <div class="logo">&#128167; Grohe Smarthome</div>
+    <div>
+        <label for="deviceSelect" id="lbl-device"></label>
+        <select id="deviceSelect"><option value="">&#8212;</option></select>
     </div>
-    <div id="sense-group" class="device-group" style="display:none">
-        <div class="group-title"><span class="group-icon sense-icon"></span><span id="h-sense"></span></div>
-        <div id="sense-cards"></div>
+    <div class="spacer"></div>
+    <button class="btn-toolbar" id="config-btn"></button>
+    <div id="connStatus">
+        <span class="dot"></span><span id="connLabel"></span>
     </div>
-    <div id="guard-group" class="device-group" style="display:none">
-        <div class="group-title"><span class="group-icon guard-icon"></span><span id="h-guard"></span></div>
-        <div id="guard-cards"></div>
+</div>
+<!-- MAIN -->
+<div id="main">
+    <div id="loading"></div>
+    <div id="placeholder"></div>
+    <div id="device-detail" style="display:none">
+        <div id="device-card-container"></div>
     </div>
-    <div id="blue-group" class="device-group" style="display:none">
-        <div class="group-title"><span class="group-icon blue-icon"></span><span id="h-blue"></span></div>
-        <div id="blue-cards"></div>
-    </div>
-    <div id="no-devices"></div>
     <div id="refresh-info"></div>
 </div>
 <script>
@@ -178,7 +174,7 @@ cleaningCount:'Cleanings',filterChangeCount:'Filter Changes',pumpCount:'Pump Cyc
 powerCutCount:'Power Cuts',lastMeasurement:'Last Measurement',dateCleaning:'Last Cleaning',
 dateCo2:'Last CO\u2082 Replacement',dateFilter:'Last Filter Replacement',
 tapType:'Tap Type',tapAmount:'Amount',tapTypeStill:'Still',tapTypeMedium:'Medium',
-tapTypeCarbonated:'Carbonated',notifMessage:'Message',notifTime:'Time',notifCategory:'Category',secControls:'Controls',btnValveOpen:'Open Valve',btnValveClose:'Close Valve',btnMeasure:'Start Pressure Measurement',btnDispense:'Dispense',btnResetCo2:'Reset CO₂',btnResetFilter:'Reset Filter',offlineHint:'Device is offline – controls disabled',toastSending:'Sending…',toastSent:'Command sent',toastError:'Error: ',confirmReset:'Confirm reset?'},
+tapTypeCarbonated:'Carbonated',notifMessage:'Message',notifTime:'Time',notifCategory:'Category',secControls:'Controls',btnValveOpen:'Open Valve',btnValveClose:'Close Valve',btnMeasure:'Start Pressure Measurement',btnDispense:'Dispense',btnResetCo2:'Reset CO₂',btnResetFilter:'Reset Filter',offlineHint:'Device is offline – controls disabled',toastSending:'Sending…',toastSent:'Command sent',toastError:'Error: ',confirmReset:'Confirm reset?',selectDevice:'Select a device to see its details.',deviceLabel:'Device:'},
 de:{loading:'Lade\u2026',noConn:'Verbindung zum ioBroker-Socket nicht m\u00f6glich.',error:'Fehler\u202f: ',
 refreshed:'Zuletzt\u00a0aktualisiert\u202f: ',configBtn:'Konfiguration',
 intro:'\u00dcbersicht aller verbundenen Grohe Wassenger\u00e4te.',
@@ -206,7 +202,7 @@ cleaningCount:'Reinigungen',filterChangeCount:'Filterwechsel',pumpCount:'Pumpenz
 powerCutCount:'Stromausf\u00e4lle',lastMeasurement:'Letzte Messung',dateCleaning:'Letzte Reinigung',
 dateCo2:'Letzter CO\u2082-Wechsel',dateFilter:'Letzter Filterwechsel',
 tapType:'Zapfart',tapAmount:'Menge',tapTypeStill:'Still',tapTypeMedium:'Medium',
-tapTypeCarbonated:'Sprudelnd',notifMessage:'Meldung',notifTime:'Zeit',notifCategory:'Kategorie',secControls:'Steuerung',btnValveOpen:'Ventil öffnen',btnValveClose:'Ventil schließen',btnMeasure:'Druckmessung starten',btnDispense:'Zapfen',btnResetCo2:'CO₂ zurücksetzen',btnResetFilter:'Filter zurücksetzen',offlineHint:'Gerät ist offline – Steuerungen deaktiviert',toastSending:'Wird gesendet…',toastSent:'Befehl gesendet',toastError:'Fehler: ',confirmReset:'Zurücksetzen bestätigen?'},
+tapTypeCarbonated:'Sprudelnd',notifMessage:'Meldung',notifTime:'Zeit',notifCategory:'Kategorie',secControls:'Steuerung',btnValveOpen:'Ventil öffnen',btnValveClose:'Ventil schließen',btnMeasure:'Druckmessung starten',btnDispense:'Zapfen',btnResetCo2:'CO₂ zurücksetzen',btnResetFilter:'Filter zurücksetzen',offlineHint:'Gerät ist offline – Steuerungen deaktiviert',toastSending:'Wird gesendet…',toastSent:'Befehl gesendet',toastError:'Fehler: ',confirmReset:'Zurücksetzen bestätigen?',selectDevice:'Gerät auswählen, um Details anzuzeigen.',deviceLabel:'Gerät:'},
 es:{loading:'Cargando\u2026',noConn:'No se puede conectar al socket de ioBroker.',error:'Error\u202f: ',
 refreshed:'\u00daltima\u00a0actualizaci\u00f3n\u202f: ',configBtn:'Configuraci\u00f3n',
 intro:'Resumen de todos los dispositivos de agua Grohe conectados.',
@@ -232,7 +228,7 @@ maxIdleTime:'Max inactividad',cleaningCount:'Limpiezas',filterChangeCount:'Cambi
 pumpCount:'Ciclos bomba',powerCutCount:'Cortes energ\u00eda',lastMeasurement:'\u00daltima medici\u00f3n',
 dateCleaning:'\u00daltima limpieza',dateCo2:'\u00daltimo CO\u2082',dateFilter:'\u00daltimo filtro',
 tapType:'Tipo grifo',tapAmount:'Cantidad',tapTypeStill:'Sin gas',tapTypeMedium:'Medio',
-tapTypeCarbonated:'Con gas',notifMessage:'Mensaje',notifTime:'Hora',notifCategory:'Categor\u00eda',secControls:'Controles',btnValveOpen:'Abrir válvula',btnValveClose:'Cerrar válvula',btnMeasure:'Iniciar medición de presión',btnDispense:'Dispensar',btnResetCo2:'Restablecer CO₂',btnResetFilter:'Restablecer filtro',offlineHint:'Dispositivo sin conexión – controles desactivados',toastSending:'Enviando…',toastSent:'Comando enviado',toastError:'Error: ',confirmReset:'¿Confirmar reinicio?'},
+tapTypeCarbonated:'Con gas',notifMessage:'Mensaje',notifTime:'Hora',notifCategory:'Categor\u00eda',secControls:'Controles',btnValveOpen:'Abrir válvula',btnValveClose:'Cerrar válvula',btnMeasure:'Iniciar medición de presión',btnDispense:'Dispensar',btnResetCo2:'Restablecer CO₂',btnResetFilter:'Restablecer filtro',offlineHint:'Dispositivo sin conexión – controles desactivados',toastSending:'Enviando…',toastSent:'Comando enviado',toastError:'Error: ',confirmReset:'¿Confirmar reinicio?',selectDevice:'Seleccione un dispositivo para ver los detalles.',deviceLabel:'Dispositivo:'},
 fr:{loading:'Chargement\u2026',noConn:'Impossible de se connecter au socket ioBroker.',error:'Erreur\u202f: ',
 refreshed:'Derni\u00e8re\u00a0mise\u00a0\u00e0\u00a0jour\u202f: ',configBtn:'Configuration',
 intro:"Vue d\u2019ensemble de tous les appareils d\u2019eau Grohe connect\u00e9s.",
@@ -258,7 +254,7 @@ maxIdleTime:'Inactivit\u00e9 max',cleaningCount:'Nettoyages',filterChangeCount:'
 pumpCount:'Cycles pompe',powerCutCount:'Coupures',lastMeasurement:'Derni\u00e8re mesure',
 dateCleaning:'Dern. nettoyage',dateCo2:'Dern. CO\u2082',dateFilter:'Dern. filtre',
 tapType:'Type',tapAmount:'Quantit\u00e9',tapTypeStill:'Plat',tapTypeMedium:'Moyen',
-tapTypeCarbonated:'Gazeux',notifMessage:'Message',notifTime:'Heure',notifCategory:'Cat\u00e9gorie',secControls:'Contrôles',btnValveOpen:'Ouvrir vanne',btnValveClose:'Fermer vanne',btnMeasure:'Démarrer mesure pression',btnDispense:'Distribuer',btnResetCo2:'Réinitialiser CO₂',btnResetFilter:'Réinitialiser filtre',offlineHint:'Appareil hors ligne – commandes désactivées',toastSending:'Envoi…',toastSent:'Commande envoyée',toastError:'Erreur : ',confirmReset:'Confirmer la réinitialisation ?'},
+tapTypeCarbonated:'Gazeux',notifMessage:'Message',notifTime:'Heure',notifCategory:'Cat\u00e9gorie',secControls:'Contrôles',btnValveOpen:'Ouvrir vanne',btnValveClose:'Fermer vanne',btnMeasure:'Démarrer mesure pression',btnDispense:'Distribuer',btnResetCo2:'Réinitialiser CO₂',btnResetFilter:'Réinitialiser filtre',offlineHint:'Appareil hors ligne – commandes désactivées',toastSending:'Envoi…',toastSent:'Commande envoyée',toastError:'Erreur : ',confirmReset:'Confirmer la réinitialisation ?',selectDevice:'Sélectionnez un appareil pour voir les détails.',deviceLabel:'Appareil :'},
 it:{loading:'Caricamento\u2026',noConn:'Impossibile connettersi al socket ioBroker.',error:'Errore\u202f: ',
 refreshed:'Ultimo\u00a0aggiornamento\u202f: ',configBtn:'Configurazione',
 intro:'Panoramica di tutti i dispositivi acqua Grohe connessi.',
@@ -284,7 +280,7 @@ maxIdleTime:'Inattivit\u00e0 max',cleaningCount:'Pulizie',filterChangeCount:'Cam
 pumpCount:'Cicli pompa',powerCutCount:'Interruzioni',lastMeasurement:'Ultima misurazione',
 dateCleaning:'Ultima pulizia',dateCo2:'Ultima sost. CO\u2082',dateFilter:'Ultima sost. filtro',
 tapType:'Tipo acqua',tapAmount:'Quantit\u00e0',tapTypeStill:'Naturale',tapTypeMedium:'Medio',
-tapTypeCarbonated:'Frizzante',notifMessage:'Messaggio',notifTime:'Ora',notifCategory:'Categoria',secControls:'Controlli',btnValveOpen:'Aprire valvola',btnValveClose:'Chiudere valvola',btnMeasure:'Avviare misura pressione',btnDispense:'Erogare',btnResetCo2:'Ripristina CO₂',btnResetFilter:'Ripristina filtro',offlineHint:'Dispositivo offline – controlli disabilitati',toastSending:'Invio…',toastSent:'Comando inviato',toastError:'Errore: ',confirmReset:'Confermare ripristino?'},
+tapTypeCarbonated:'Frizzante',notifMessage:'Messaggio',notifTime:'Ora',notifCategory:'Categoria',secControls:'Controlli',btnValveOpen:'Aprire valvola',btnValveClose:'Chiudere valvola',btnMeasure:'Avviare misura pressione',btnDispense:'Erogare',btnResetCo2:'Ripristina CO₂',btnResetFilter:'Ripristina filtro',offlineHint:'Dispositivo offline – controlli disabilitati',toastSending:'Invio…',toastSent:'Comando inviato',toastError:'Errore: ',confirmReset:'Confermare ripristino?',selectDevice:'Selezionare un dispositivo per visualizzare i dettagli.',deviceLabel:'Dispositivo:'},
 nl:{loading:'Laden\u2026',noConn:'Kan geen verbinding maken met ioBroker-socket.',error:'Fout\u202f: ',
 refreshed:'Laatste\u00a0update\u202f: ',configBtn:'Configuratie',
 intro:'Overzicht van alle verbonden Grohe waterapparaten.',noDevices:'Geen Grohe-apparaten gevonden.',
@@ -309,7 +305,7 @@ maxIdleTime:'Max inactief',cleaningCount:'Reinigingen',filterChangeCount:'Filter
 pumpCount:'Pompcycli',powerCutCount:'Stroomstoringen',lastMeasurement:'Laatste meting',
 dateCleaning:'Laatste reiniging',dateCo2:'Laatste CO\u2082-wissel',dateFilter:'Laatste filterwissel',
 tapType:'Kraantype',tapAmount:'Hoeveelheid',tapTypeStill:'Stil',tapTypeMedium:'Medium',
-tapTypeCarbonated:'Koolzuur',notifMessage:'Melding',notifTime:'Tijd',notifCategory:'Categorie',secControls:'Bediening',btnValveOpen:'Klep openen',btnValveClose:'Klep sluiten',btnMeasure:'Drukmeting starten',btnDispense:'Tappen',btnResetCo2:'CO₂ resetten',btnResetFilter:'Filter resetten',offlineHint:'Apparaat offline – bedieningselementen uitgeschakeld',toastSending:'Verzenden…',toastSent:'Opdracht verzonden',toastError:'Fout: ',confirmReset:'Reset bevestigen?'},
+tapTypeCarbonated:'Koolzuur',notifMessage:'Melding',notifTime:'Tijd',notifCategory:'Categorie',secControls:'Bediening',btnValveOpen:'Klep openen',btnValveClose:'Klep sluiten',btnMeasure:'Drukmeting starten',btnDispense:'Tappen',btnResetCo2:'CO₂ resetten',btnResetFilter:'Filter resetten',offlineHint:'Apparaat offline – bedieningselementen uitgeschakeld',toastSending:'Verzenden…',toastSent:'Opdracht verzonden',toastError:'Fout: ',confirmReset:'Reset bevestigen?',selectDevice:'Selecteer een apparaat om details te zien.',deviceLabel:'Apparaat:'},
 pl:{loading:'\u0141adowanie\u2026',noConn:'Nie mo\u017cna po\u0142\u0105czy\u0107 si\u0119 z gniazdem ioBroker.',error:'B\u0142\u0105d\u202f: ',
 refreshed:'Ostatnia\u00a0aktualizacja\u202f: ',configBtn:'Konfiguracja',
 intro:'Przegl\u0105d urz\u0105dze\u0144 wodnych Grohe.',noDevices:'Nie znaleziono urz\u0105dze\u0144 Grohe.',
@@ -334,7 +330,7 @@ maxIdleTime:'Max bezczynno\u015b\u0107',cleaningCount:'Czyszczenia',filterChange
 pumpCount:'Cykle pompy',powerCutCount:'Przerwy zasilania',lastMeasurement:'Ostatni pomiar',
 dateCleaning:'Ostatnie czyszczenie',dateCo2:'Ostatnia wymiana CO\u2082',dateFilter:'Ostatnia wymiana filtra',
 tapType:'Typ wody',tapAmount:'Ilo\u015b\u0107',tapTypeStill:'Niegazowana',tapTypeMedium:'\u015arednio',
-tapTypeCarbonated:'Gazowana',notifMessage:'Wiadomo\u015b\u0107',notifTime:'Czas',notifCategory:'Kategoria',secControls:'Sterowanie',btnValveOpen:'Otwórz zawór',btnValveClose:'Zamknij zawór',btnMeasure:'Uruchom pomiar ciśnienia',btnDispense:'Napełnij',btnResetCo2:'Zeruj CO₂',btnResetFilter:'Zeruj filtr',offlineHint:'Urządzenie offline – sterowanie wyłączone',toastSending:'Wysyłanie…',toastSent:'Polecenie wysłane',toastError:'Błąd: ',confirmReset:'Potwierdź reset?'},
+tapTypeCarbonated:'Gazowana',notifMessage:'Wiadomo\u015b\u0107',notifTime:'Czas',notifCategory:'Kategoria',secControls:'Sterowanie',btnValveOpen:'Otwórz zawór',btnValveClose:'Zamknij zawór',btnMeasure:'Uruchom pomiar ciśnienia',btnDispense:'Napełnij',btnResetCo2:'Zeruj CO₂',btnResetFilter:'Zeruj filtr',offlineHint:'Urządzenie offline – sterowanie wyłączone',toastSending:'Wysyłanie…',toastSent:'Polecenie wysłane',toastError:'Błąd: ',confirmReset:'Potwierdź reset?',selectDevice:'Wybierz urządzenie, aby zobaczyć szczegóły.',deviceLabel:'Urządzenie:'},
 pt:{loading:'A\u00a0carregar\u2026',noConn:'N\u00e3o \u00e9 poss\u00edvel ligar ao socket ioBroker.',error:'Erro\u202f: ',
 refreshed:'\u00daltima\u00a0atualiza\u00e7\u00e3o\u202f: ',configBtn:'Configura\u00e7\u00e3o',
 intro:'Vis\u00e3o geral dos dispositivos de \u00e1gua Grohe.',noDevices:'Nenhum dispositivo Grohe encontrado.',
@@ -359,7 +355,7 @@ maxIdleTime:'M\u00e1x inativo',cleaningCount:'Limpezas',filterChangeCount:'Subst
 pumpCount:'Ciclos bomba',powerCutCount:'Cortes energia',lastMeasurement:'\u00daltima leitura',
 dateCleaning:'\u00dalt. limpeza',dateCo2:'\u00dalt. CO\u2082',dateFilter:'\u00dalt. filtro',
 tapType:'Tipo \u00e1gua',tapAmount:'Quantidade',tapTypeStill:'Sem g\u00e1s',tapTypeMedium:'M\u00e9dia',
-tapTypeCarbonated:'Com g\u00e1s',notifMessage:'Mensagem',notifTime:'Hora',notifCategory:'Categoria',secControls:'Controlos',btnValveOpen:'Abrir válvula',btnValveClose:'Fechar válvula',btnMeasure:'Iniciar medição pressão',btnDispense:'Dispensar',btnResetCo2:'Repor CO₂',btnResetFilter:'Repor filtro',offlineHint:'Dispositivo offline – controlos desativados',toastSending:'A enviar…',toastSent:'Comando enviado',toastError:'Erro: ',confirmReset:'Confirmar reposição?'},
+tapTypeCarbonated:'Com g\u00e1s',notifMessage:'Mensagem',notifTime:'Hora',notifCategory:'Categoria',secControls:'Controlos',btnValveOpen:'Abrir válvula',btnValveClose:'Fechar válvula',btnMeasure:'Iniciar medição pressão',btnDispense:'Dispensar',btnResetCo2:'Repor CO₂',btnResetFilter:'Repor filtro',offlineHint:'Dispositivo offline – controlos desativados',toastSending:'A enviar…',toastSent:'Comando enviado',toastError:'Erro: ',confirmReset:'Confirmar reposição?',selectDevice:'Selecione um dispositivo para ver os detalhes.',deviceLabel:'Dispositivo:'},
 ru:{loading:'\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430\u2026',noConn:'\u041d\u0435\u0442 \u043f\u043e\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f \u043a \u0441\u043e\u043a\u0435\u0442\u0443 ioBroker.',
 error:'\u041e\u0448\u0438\u0431\u043a\u0430\u202f: ',refreshed:'\u041e\u0431\u043d\u043e\u0432\u043b\u0435\u043d\u043e\u202f: ',configBtn:'\u041a\u043e\u043d\u0444\u0438\u0433\u0443\u0440\u0430\u0446\u0438\u044f',
 intro:'\u041e\u0431\u0437\u043e\u0440 \u0432\u043e\u0434\u043d\u044b\u0445 \u0443\u0441\u0442\u0440\u043e\u0439\u0441\u0442\u0432 Grohe.',noDevices:'\u0423\u0441\u0442\u0440\u043e\u0439\u0441\u0442\u0432\u0430 Grohe \u043d\u0435 \u043d\u0430\u0439\u0434\u0435\u043d\u044b.',
@@ -386,7 +382,7 @@ maxIdleTime:'\u041c\u0430\u043a\u0441. \u043f\u0440\u043e\u0441\u0442.',cleaning
 pumpCount:'\u0426\u0438\u043a\u043b\u044b \u043d\u0430\u0441.',powerCutCount:'\u041e\u0442\u043a\u043b\u044e\u0447\u0435\u043d\u0438\u044f',lastMeasurement:'\u041f\u043e\u0441\u043b. \u0438\u0437\u043c\u0435\u0440.',
 dateCleaning:'\u041f\u043e\u0441\u043b. \u0447\u0438\u0441\u0442\u043a\u0430',dateCo2:'\u041f\u043e\u0441\u043b. CO\u2082',dateFilter:'\u041f\u043e\u0441\u043b. \u0444\u0438\u043b\u044c\u0442\u0440',
 tapType:'\u0422\u0438\u043f \u0432\u043e\u0434\u044b',tapAmount:'\u041e\u0431\u044a\u0435\u043c',tapTypeStill:'\u0411\u0435\u0437 \u0433\u0430\u0437\u0430',tapTypeMedium:'\u0421\u0440\u0435\u0434\u043d.',
-tapTypeCarbonated:'\u0421 \u0433\u0430\u0437\u043e\u043c',notifMessage:'\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435',notifTime:'\u0412\u0440\u0435\u043c\u044f',notifCategory:'\u041a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f',secControls:'Управление',btnValveOpen:'Открыть клапан',btnValveClose:'Закрыть клапан',btnMeasure:'Запустить изм. давл.',btnDispense:'Налить',btnResetCo2:'Сброс CO₂',btnResetFilter:'Сброс фильтра',offlineHint:'Устройство офлайн – управление недоступно',toastSending:'Отправка…',toastSent:'Команда отправлена',toastError:'Ошибка: ',confirmReset:'Подтвердить сброс?'},
+tapTypeCarbonated:'\u0421 \u0433\u0430\u0437\u043e\u043c',notifMessage:'\u0421\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435',notifTime:'\u0412\u0440\u0435\u043c\u044f',notifCategory:'\u041a\u0430\u0442\u0435\u0433\u043e\u0440\u0438\u044f',secControls:'Управление',btnValveOpen:'Открыть клапан',btnValveClose:'Закрыть клапан',btnMeasure:'Запустить изм. давл.',btnDispense:'Налить',btnResetCo2:'Сброс CO₂',btnResetFilter:'Сброс фильтра',offlineHint:'Устройство офлайн – управление недоступно',toastSending:'Отправка…',toastSent:'Команда отправлена',toastError:'Ошибка: ',confirmReset:'Подтвердить сброс?',selectDevice:'Выберите устройство для просмотра подробностей.',deviceLabel:'Устройство:'},
 uk:{loading:'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f\u2026',noConn:'\u041d\u0435\u043c\u043e\u0436\u043b\u0438\u0432\u043e \u043f\u0456\u0434\u043a\u043b\u044e\u0447\u0438\u0442\u0438\u0441\u044c \u0434\u043e \u0441\u043e\u043a\u0435\u0442\u0430 ioBroker.',
 error:'\u041f\u043e\u043c\u0438\u043b\u043a\u0430\u202f: ',refreshed:'\u041e\u0441\u0442\u0430\u043d\u043d\u0454\u00a0\u043e\u043d\u043e\u0432\u043b\u0435\u043d\u043d\u044f\u202f: ',configBtn:'\u041a\u043e\u043d\u0444\u0456\u0433\u0443\u0440\u0430\u0446\u0456\u044f',
 intro:'\u041e\u0433\u043b\u044f\u0434 \u0432\u043e\u0434\u043d\u0438\u0445 \u043f\u0440\u0438\u0441\u0442\u0440\u043e\u0457\u0432 Grohe.',noDevices:'\u041f\u0440\u0438\u0441\u0442\u0440\u043e\u0457 Grohe \u043d\u0435 \u0437\u043d\u0430\u0439\u0434\u0435\u043d\u043e.',
@@ -413,7 +409,7 @@ maxIdleTime:'\u041c\u0430\u043a\u0441 \u043f\u0440\u043e\u0441\u0442.',cleaningC
 pumpCount:'\u0426\u0438\u043a\u043b\u0438 \u043d\u0430\u0441.',powerCutCount:'\u0412\u0456\u0434\u043a\u043b\u044e\u0447\u0435\u043d\u043d\u044f',lastMeasurement:'\u041e\u0441\u0442. \u0432\u0438\u043c\u0456\u0440.',
 dateCleaning:'\u041e\u0441\u0442. \u0447\u0438\u0449\u0435\u043d\u043d\u044f',dateCo2:'\u041e\u0441\u0442. CO\u2082',dateFilter:'\u041e\u0441\u0442. \u0444\u0456\u043b\u044c\u0442\u0440',
 tapType:'\u0422\u0438\u043f \u0432\u043e\u0434\u0438',tapAmount:'\u041e\u0431\u2019\u0454\u043c',tapTypeStill:'\u0411\u0435\u0437 \u0433\u0430\u0437\u0443',tapTypeMedium:'\u0421\u0435\u0440.',
-tapTypeCarbonated:'\u0417 \u0433\u0430\u0437\u043e\u043c',notifMessage:'\u041f\u043e\u0432\u0456\u0434\u043e\u043c\u043b.',notifTime:'\u0427\u0430\u0441',notifCategory:'\u041a\u0430\u0442\u0435\u0433\u043e\u0440\u0456\u044f',secControls:'Управління',btnValveOpen:'Відкрити клапан',btnValveClose:'Закрити клапан',btnMeasure:'запустити вимір тиску',btnDispense:'Налити',btnResetCo2:'Скинути CO₂',btnResetFilter:'Скинути фільтр',offlineHint:'Пристрій офлайн – управління вимкнено',toastSending:'Надсилання…',toastSent:'Команду надіслано',toastError:'Помилка: ',confirmReset:'Підтвердити скидання?'},
+tapTypeCarbonated:'\u0417 \u0433\u0430\u0437\u043e\u043c',notifMessage:'\u041f\u043e\u0432\u0456\u0434\u043e\u043c\u043b.',notifTime:'\u0427\u0430\u0441',notifCategory:'\u041a\u0430\u0442\u0435\u0433\u043e\u0440\u0456\u044f',secControls:'Управління',btnValveOpen:'Відкрити клапан',btnValveClose:'Закрити клапан',btnMeasure:'запустити вимір тиску',btnDispense:'Налити',btnResetCo2:'Скинути CO₂',btnResetFilter:'Скинути фільтр',offlineHint:'Пристрій офлайн – управління вимкнено',toastSending:'Надсилання…',toastSent:'Команду надіслано',toastError:'Помилка: ',confirmReset:'Підтвердити скидання?',selectDevice:'Оберіть пристрій для перегляду деталей.',deviceLabel:'Пристрій:'},
 'zh-cn':{loading:'\u52a0\u8f7d\u4e2d\u2026',noConn:'\u65e0\u6cd5\u8fde\u63a5\u5230 ioBroker \u5957\u63a5\u5b57\u3002',
 error:'\u9519\u8bef\uff1a',refreshed:'\u6700\u540e\u66f4\u65b0\uff1a',configBtn:'\u914d\u7f6e',
 intro:'\u6240\u6709\u5df2\u8fde\u63a5\u7684 Grohe \u6c34\u8bbe\u5907\u6982\u89c8\u3002',noDevices:'\u672a\u627e\u5230 Grohe \u8bbe\u5907\u3002',
@@ -438,7 +434,7 @@ maxIdleTime:'\u6700\u5927\u7a7a\u95f2',cleaningCount:'\u6e05\u6d01\u6b21\u6570',
 pumpCount:'\u6cf5\u5faa\u73af',powerCutCount:'\u65ad\u7535\u6b21\u6570',lastMeasurement:'\u6700\u540e\u6d4b\u91cf',
 dateCleaning:'\u6700\u540e\u6e05\u6d01',dateCo2:'\u6700\u540e CO\u2082 \u66f4\u6362',dateFilter:'\u6700\u540e\u6ee4\u82af\u66f4\u6362',
 tapType:'\u51fa\u6c34\u7c7b\u578b',tapAmount:'\u6c34\u91cf',tapTypeStill:'\u9759\u6c34',tapTypeMedium:'\u4e2d\u95f4',
-tapTypeCarbonated:'\u6c7d\u6c34',notifMessage:'\u6d88\u606f',notifTime:'\u65f6\u95f4',notifCategory:'\u7c7b\u522b',secControls:'控制',btnValveOpen:'开阀',btnValveClose:'关阀',btnMeasure:'启动压力测量',btnDispense:'出水',btnResetCo2:'重置 CO₂',btnResetFilter:'重置滤芯',offlineHint:'设备离线 – 控制已禁用',toastSending:'发送中…',toastSent:'命令已发送',toastError:'错误: ',confirmReset:'确认重置?'}
+tapTypeCarbonated:'\u6c7d\u6c34',notifMessage:'\u6d88\u606f',notifTime:'\u65f6\u95f4',notifCategory:'\u7c7b\u522b',secControls:'控制',btnValveOpen:'开阀',btnValveClose:'关阀',btnMeasure:'启动压力测量',btnDispense:'出水',btnResetCo2:'重置 CO₂',btnResetFilter:'重置滤芯',offlineHint:'设备离线 – 控制已禁用',toastSending:'发送中…',toastSent:'命令已发送',toastError:'错误: ',confirmReset:'确认重置?',selectDevice:'选择设备以查看详情。',deviceLabel:'设备：'}
 };
 var lang=(navigator.language||'en').replace('-','_').toLowerCase();
 var T=STRINGS[lang]||STRINGS[lang.slice(0,2)]||STRINGS.en;
@@ -449,6 +445,8 @@ if(isNaN(instance)||instance<0)instance=0;
 var NS='grohe-smarthome.'+instance;
 var EXCLUDED_ROOTS=['info','auth'];
 var _sock=null;
+var _devices={};
+var _selectedUuid=null;
 function _getObject(id){var ps=_sock;if(ps&&typeof ps.getObject==='function')return ps.getObject(id);
 return new Promise(function(res,rej){ps.emit('getObject',id,function(err,obj){err?rej(new Error(err)):res(obj);});});}
 function _getStates(pat){var ps=_sock;if(ps&&typeof ps.getStates==='function')return ps.getStates(pat);
@@ -468,6 +466,9 @@ addL('connect',function(){if(done)return;done=true;_sock=s;resolve();});
 addL('connect_error',function(e){if(done)return;done=true;reject(e);});
 setTimeout(function(){if(!done){done=true;reject(new Error('Socket timeout'));}},SOCKET_TIMEOUT_MS);
 }catch(e){reject(e);}});}
+function setConnStatus(online){var el=document.getElementById('connStatus');
+var lbl=document.getElementById('connLabel');
+el.className=online?'online':'offline';lbl.textContent=online?T.online:T.offline;}
 function getVal(st,k){var s=st[k];if(!s||s.val===null||s.val===undefined)return null;return s.val;}
 function fmtNum(v,d,u){if(v===null||v===undefined)return null;var n=parseFloat(v);if(isNaN(n))return null;
 return n.toFixed(d)+(u?'\u202f'+u:'');}
@@ -475,9 +476,9 @@ function fmtDate(v){if(!v)return null;try{var d=new Date(v);if(isNaN(d.getTime()
 function fmtBool(v){if(v===null||v===undefined)return null;return v?T.yes:T.no;}
 function fmtTapType(v){if(v===1)return T.tapTypeStill;if(v===2)return T.tapTypeMedium;if(v===3)return T.tapTypeCarbonated;return v!==null?String(v):null;}
 function makeDot(online){var a=(online===true||online==='true');
-var d=document.createElement('span');d.className='dot'+(a?'':' inactive');d.title=a?T.online:T.offline;return d;}
+var d=document.createElement('span');d.className='dot-status'+(a?'':' inactive');d.title=a?T.online:T.offline;return d;}
 function makeProgressBar(val){var pct=Math.max(0,Math.min(100,parseFloat(val)||0));
-var color=pct<20?'var(--danger)':pct<50?'var(--warn)':'var(--accent)';
+var color=pct<20?'var(--danger)':pct<50?'var(--warning)':'var(--primary)';
 var div=document.createElement('div');div.className='progress-wrap';
 div.innerHTML='<div class="progress-track"><div class="progress-fill" style="width:'+pct.toFixed(0)+'%;background:'+color+'"></div></div>'
 +'<span class="progress-label" style="color:'+color+'">'+pct.toFixed(0)+'\u202f%</span>';return div;}
@@ -502,61 +503,16 @@ _toastTimer=setTimeout(function(){el.className='';},3000);}
 function _sendState(id,val,successMsg){showToast(T.toastSending);
 return _setState(id,val).then(function(){showToast(successMsg||T.toastSent,'success');})
 .catch(function(e){showToast(T.toastError+(e&&e.message?e.message:String(e)),'error');});}
-function appendGuardControls(card,uuid,s){
+function appendStatusSection(body,s){var gs=makeSection(T.secStatus);
 var online=getVal(s,'status.online');
-var sec=document.createElement('div');sec.className='ctrl-section';
-var title=document.createElement('div');title.className='sec-title';title.textContent=T.secControls;sec.appendChild(title);
-if(!online){var hint=document.createElement('div');hint.className='offline-hint';hint.textContent='\u26a0\ufe0f '+T.offlineHint;sec.appendChild(hint);}
-var row=document.createElement('div');row.className='ctrl-btns';
-var btnOpen=_makeBtn('\ud83d\udfe2 '+T.btnValveOpen,'success',function(){_sendState(NS+'.'+uuid+'.controls.valveOpen',true,T.btnValveOpen+': OK');});
-var btnClose=_makeBtn('\ud83d\udd34 '+T.btnValveClose,'danger',function(){_sendState(NS+'.'+uuid+'.controls.valveClose',true,T.btnValveClose+': OK');});
-var btnMeasure=_makeBtn('\ud83d\udcca '+T.btnMeasure,'primary',function(){_sendState(NS+'.'+uuid+'.controls.startPressureMeasurement',true,T.btnMeasure+': OK');});
-[btnOpen,btnClose,btnMeasure].forEach(function(b){b.disabled=!online;row.appendChild(b);});
-sec.appendChild(row);card.appendChild(sec);}
-function appendBlueControls(card,uuid,s){
-var online=getVal(s,'status.online');
-var sec=document.createElement('div');sec.className='ctrl-section';
-var title=document.createElement('div');title.className='sec-title';title.textContent=T.secControls;sec.appendChild(title);
-if(!online){var hint=document.createElement('div');hint.className='offline-hint';hint.textContent='\u26a0\ufe0f '+T.offlineHint;sec.appendChild(hint);}
-var fr=document.createElement('div');fr.className='ctrl-field-row';
-var grpType=document.createElement('div');grpType.className='ctrl-field-group';
-var lbType=document.createElement('span');lbType.className='ctrl-field-label';lbType.textContent=T.tapType;grpType.appendChild(lbType);
-var sel=document.createElement('select');sel.className='ctrl-select';sel.disabled=!online;
-[[1,T.tapTypeStill],[2,T.tapTypeMedium],[3,T.tapTypeCarbonated]].forEach(function(p){
-var o=document.createElement('option');o.value=p[0];o.textContent=p[1];sel.appendChild(o);});
-var curType=getVal(s,'controls.tapType');if(curType&&curType>0)sel.value=curType;else sel.value=1;
-grpType.appendChild(sel);fr.appendChild(grpType);
-var grpAmt=document.createElement('div');grpAmt.className='ctrl-field-group';
-var lbAmt=document.createElement('span');lbAmt.className='ctrl-field-label';lbAmt.textContent=T.tapAmount+' (ml)';grpAmt.appendChild(lbAmt);
-var inp=document.createElement('input');inp.type='number';inp.min=50;inp.max=2000;inp.step=50;
-inp.className='ctrl-input';inp.disabled=!online;
-var curAmt=getVal(s,'controls.tapAmount');inp.value=(curAmt&&curAmt>0)?curAmt:250;
-grpAmt.appendChild(inp);fr.appendChild(grpAmt);
-sec.appendChild(fr);
-var row=document.createElement('div');row.className='ctrl-btns';
-var btnDispense=_makeBtn('\ud83d\udca7 '+T.btnDispense,'success',function(){
-_setState(NS+'.'+uuid+'.controls.tapType',parseInt(sel.value,10))
-.then(function(){return _setState(NS+'.'+uuid+'.controls.tapAmount',parseInt(inp.value,10));})
-.then(function(){return _setState(NS+'.'+uuid+'.controls.dispenseTrigger',true);})
-.then(function(){showToast(T.btnDispense+': OK','success');})
-.catch(function(e){showToast(T.toastError+(e&&e.message?e.message:String(e)),'error');});});
-var btnCo2=_makeBtn('\u267b\ufe0f '+T.btnResetCo2,'primary',function(){
-if(!confirm(T.confirmReset))return;_sendState(NS+'.'+uuid+'.controls.resetCo2',true,T.btnResetCo2+': OK');});
-var btnFilt=_makeBtn('\ud83d\udeb0 '+T.btnResetFilter,'primary',function(){
-if(!confirm(T.confirmReset))return;_sendState(NS+'.'+uuid+'.controls.resetFilter',true,T.btnResetFilter+': OK');});
-[btnDispense,btnCo2,btnFilt].forEach(function(b){b.disabled=!online;row.appendChild(b);});
-sec.appendChild(row);card.appendChild(sec);}
-function appendStatusSection(card,s){var g=makeSection(T.secStatus);
-var online=getVal(s,'status.online');
-addProp(g.grid,T.online,online===null?T.na:(online?T.online:T.offline),online?'ok':'danger');
-var upd=getVal(s,'status.updateAvailable');
-if(upd!==null)addProp(g.grid,T.updateAvailable,fmtBool(upd),upd?'warn':null);
-var wifi=getVal(s,'status.wifiQuality');if(wifi!==null)addProp(g.grid,T.wifiQuality,String(wifi));
-card.appendChild(g.sec);}
+addProp(gs.grid,T.online,online===true||online==='true'?T.online:T.offline,online?'ok':'danger');
+addProp(gs.grid,T.updateAvailable,fmtBool(getVal(s,'status.updateAvailable')),getVal(s,'status.updateAvailable')?'warn':null);
+addProp(gs.grid,T.wifiQuality,fmtNum(getVal(s,'status.wifiQuality'),0,''));
+body.appendChild(gs.sec);}
 function appendNotifSection(card,s){var msg=getVal(s,'notifications.latestMessage');if(!msg)return;
-var g=makeSection(T.secNotification);
+var catName=getVal(s,'notifications.latestCategoryName');
 var catNum=getVal(s,'notifications.latestCategory');
-var catName=getVal(s,'notifications.latestCategoryName')||'';
+var g=makeSection(T.secNotification);
 var catCls=catNum===30?'alarm':catNum===20?'warning':'info';
 var row=document.createElement('div');row.className='notif-row';
 var msgDiv=document.createElement('div');msgDiv.className='notif-message';
@@ -565,6 +521,49 @@ var sp=document.createElement('span');sp.textContent=msg;msgDiv.appendChild(sp);
 var ts=fmtDate(getVal(s,'notifications.latestTimestamp'));
 if(ts){var td=document.createElement('div');td.className='notif-time';td.textContent=ts;row.appendChild(td);}
 g.sec.removeChild(g.grid);g.sec.appendChild(row);card.appendChild(g.sec);}
+function appendGuardControls(card,uuid,s){
+var online=getVal(s,'status.online');
+var sec=document.createElement('div');sec.className='ctrl-section';
+var title=document.createElement('div');title.className='sec-title';title.textContent=T.secControls;sec.appendChild(title);
+if(!online){var hint=document.createElement('div');hint.className='offline-hint';hint.textContent='\u26a0\ufe0f '+T.offlineHint;sec.appendChild(hint);}
+var row=document.createElement('div');row.className='ctrl-btns';
+var btnOpen=_makeBtn('\ud83d\udfe2 '+T.btnValveOpen,'success',function(){_sendState(NS+'.'+uuid+'.controls.valveOpen',true,T.btnValveOpen+': OK');});
+var btnClose=_makeBtn('\ud83d\udd34 '+T.btnValveClose,'danger',function(){_sendState(NS+'.'+uuid+'.controls.valveOpen',false,T.btnValveClose+': OK');});
+var btnMeasure=_makeBtn('\ud83d\udcca '+T.btnMeasure,'primary',function(){_sendState(NS+'.'+uuid+'.controls.pressureMeasurement',true,T.btnMeasure+': OK');});
+if(!online){btnOpen.disabled=true;btnClose.disabled=true;btnMeasure.disabled=true;}
+row.appendChild(btnOpen);row.appendChild(btnClose);row.appendChild(btnMeasure);
+sec.appendChild(row);card.appendChild(sec);}
+function appendBlueControls(card,uuid,s){
+var online=getVal(s,'status.online');
+var sec=document.createElement('div');sec.className='ctrl-section';
+var title=document.createElement('div');title.className='sec-title';title.textContent=T.secControls;sec.appendChild(title);
+if(!online){var hint=document.createElement('div');hint.className='offline-hint';hint.textContent='\u26a0\ufe0f '+T.offlineHint;sec.appendChild(hint);}
+var frow=document.createElement('div');frow.className='ctrl-field-row';
+var tg=document.createElement('div');tg.className='ctrl-field-group';
+var tl=document.createElement('div');tl.className='ctrl-field-label';tl.textContent=T.tapType;tg.appendChild(tl);
+var tsel=document.createElement('select');tsel.className='ctrl-select';tsel.disabled=!online;
+[[1,T.tapTypeStill],[2,T.tapTypeMedium],[3,T.tapTypeCarbonated]].forEach(function(kv){
+var o=document.createElement('option');o.value=kv[0];o.textContent=kv[1];tsel.appendChild(o);});
+var curType=getVal(s,'controls.tapType');if(curType)tsel.value=curType;
+tg.appendChild(tsel);frow.appendChild(tg);
+var ag=document.createElement('div');ag.className='ctrl-field-group';
+var al=document.createElement('div');al.className='ctrl-field-label';al.textContent=T.tapAmount+' (ml)';ag.appendChild(al);
+var ainp=document.createElement('input');ainp.type='number';ainp.className='ctrl-input';
+ainp.min=50;ainp.max=2000;ainp.step=50;ainp.disabled=!online;
+var curAmt=getVal(s,'controls.tapAmount');ainp.value=curAmt!==null?curAmt:200;
+ag.appendChild(ainp);frow.appendChild(ag);sec.appendChild(frow);
+var brow=document.createElement('div');brow.className='ctrl-btns';
+var btnD=_makeBtn('\ud83d\udca7 '+T.btnDispense,'success',function(){
+_setState(NS+'.'+uuid+'.controls.tapType',parseInt(tsel.value)||1).then(function(){
+return _setState(NS+'.'+uuid+'.controls.tapAmount',parseInt(ainp.value)||200);}).then(function(){
+return _sendState(NS+'.'+uuid+'.controls.dispenseTrigger',true,T.btnDispense+': OK');}).catch(function(e){showToast(T.toastError+(e&&e.message?e.message:String(e)),'error');});});
+var btnCo2=_makeBtn('\u267b\ufe0f '+T.btnResetCo2,'primary',function(){
+if(!confirm(T.confirmReset+' (CO\u2082)'))return;_sendState(NS+'.'+uuid+'.controls.co2EmptyTrigger',true,T.btnResetCo2+': OK');});
+var btnFilt=_makeBtn('\ud83d\udebf '+T.btnResetFilter,'primary',function(){
+if(!confirm(T.confirmReset+' (Filter)'))return;_sendState(NS+'.'+uuid+'.controls.filterEmptyTrigger',true,T.btnResetFilter+': OK');});
+if(!online){btnD.disabled=true;btnCo2.disabled=true;btnFilt.disabled=true;}
+brow.appendChild(btnD);brow.appendChild(btnCo2);brow.appendChild(btnFilt);
+sec.appendChild(brow);card.appendChild(sec);}
 function buildHeader(device,s,extra){var hdr=document.createElement('div');hdr.className='card-header';
 hdr.appendChild(makeDot(getVal(s,'status.online')));
 var ns=document.createElement('span');ns.className='card-device-name';ns.textContent=device.name;hdr.appendChild(ns);
@@ -665,35 +664,48 @@ else if('flowRate' in s)devices[uuid].type='SENSE_GUARD';
 else if('remainingCo2' in s||'remainingFilter' in s)devices[uuid].type='BLUE';});
 return devices;}
 function render(devices){
+_devices=devices;
+var sel=document.getElementById('deviceSelect');
+var prevUuid=_selectedUuid||sel.value||null;
+// Build device list sorted by name
+var list=Object.keys(devices).map(function(u){return devices[u];}).sort(function(a,b){return a.name.localeCompare(b.name);});
+// Rebuild dropdown only if device list changed
+var uuids=list.map(function(d){return d.uuid;});
+var existing=Array.prototype.slice.call(sel.options).slice(1).map(function(o){return o.value;});
+var changed=existing.length!==uuids.length||uuids.some(function(u,i){return u!==existing[i];});
+if(changed){
+while(sel.options.length>1)sel.remove(1);
+list.forEach(function(d){
+var opt=document.createElement('option');opt.value=d.uuid;
+var typeLabel=d.type==='SENSE'?T.hSense:d.type==='SENSE_GUARD'?T.hGuard:d.type==='BLUE'?T.hBlue:'';
+opt.textContent=d.name;opt.title=typeLabel;
+sel.appendChild(opt);});}
+// Restore or keep selection
+if(prevUuid&&devices[prevUuid]){sel.value=prevUuid;_selectedUuid=prevUuid;}
+else if(list.length>0){sel.value=list[0].uuid;_selectedUuid=list[0].uuid;}
+// Refresh displayed device
+if(_selectedUuid&&devices[_selectedUuid]){showDeviceCard(_selectedUuid);}
+else{document.getElementById('placeholder').style.display='block';
+document.getElementById('device-detail').style.display='none';}
 document.getElementById('loading').style.display='none';
-document.getElementById('content').style.display='block';
-document.getElementById('intro-text').textContent=T.intro;
-document.getElementById('config-btn').textContent='\u2699\ufe0f '+T.configBtn;
-document.getElementById('h-sense').textContent=T.hSense;
-document.getElementById('h-guard').textContent=T.hGuard;
-document.getElementById('h-blue').textContent=T.hBlue;
-var sense=[],guard=[],blue=[];
-Object.keys(devices).forEach(function(uuid){var d=devices[uuid];
-if(d.type==='SENSE')sense.push(d);else if(d.type==='SENSE_GUARD')guard.push(d);else if(d.type==='BLUE')blue.push(d);});
-function byName(a,b){return a.name<b.name?-1:a.name>b.name?1:0;}
-sense.sort(byName);guard.sort(byName);blue.sort(byName);
-function renderGroup(gid,cid,list,builder){var grp=document.getElementById(gid),cont=document.getElementById(cid);
-cont.innerHTML='';if(list.length>0){list.forEach(function(d){cont.appendChild(builder(d));});grp.style.display='block';}
-else grp.style.display='none';}
-renderGroup('sense-group','sense-cards',sense,buildSenseCard);
-renderGroup('guard-group','guard-cards',guard,buildGuardCard);
-renderGroup('blue-group','blue-cards',blue,buildBlueCard);
-var noDiv=document.getElementById('no-devices');
-if(!sense.length&&!guard.length&&!blue.length){noDiv.textContent=T.noDevices;noDiv.style.display='block';}
-else noDiv.style.display='none';
 document.getElementById('refresh-info').textContent=T.refreshed+new Date().toLocaleTimeString();}
+function showDeviceCard(uuid){var d=_devices[uuid];if(!d)return;
+var cont=document.getElementById('device-card-container');cont.innerHTML='';
+var card=d.type==='SENSE'?buildSenseCard(d):d.type==='SENSE_GUARD'?buildGuardCard(d):d.type==='BLUE'?buildBlueCard(d):null;
+if(card)cont.appendChild(card);
+document.getElementById('placeholder').style.display='none';
+document.getElementById('device-detail').style.display='block';}
+function onDeviceChange(){var sel=document.getElementById('deviceSelect');
+_selectedUuid=sel.value||null;
+if(_selectedUuid&&_devices[_selectedUuid])showDeviceCard(_selectedUuid);
+else{document.getElementById('placeholder').style.display='block';
+document.getElementById('device-detail').style.display='none';}}
 function showError(msg){var e=document.getElementById('error-msg');e.textContent=T.error+msg;e.style.display='block';
-document.getElementById('loading').style.display='none';}
+document.getElementById('loading').style.display='none';setConnStatus(false);}
 function openConfig(){var hash='tab-instances/config/system.adapter.'+NS;
 try{var target=(window.parent&&window.parent!==window)?window.parent:window;
 target.location.href=target.location.href.split('#')[0]+'#'+hash;}
 catch(_e){window.open('/index.html#'+hash,'_blank');}}
-document.getElementById('config-btn').addEventListener('click',openConfig);
 function load(){_getStates(NS+'.*').then(function(states){
 if(!states||Object.keys(states).length===0){render({});return;}
 var devices=extractDevices(states);var uuids=Object.keys(devices);
@@ -705,7 +717,13 @@ if(n&&typeof n==='object'){var lk=lang.slice(0,2);n=n[lk]||n.en||n.de||Object.va
 if(n)devices[uuid].name=String(n);}}).catch(function(){});
 })).then(function(){render(devices);});
 }).catch(function(err){showError(err&&err.message?err.message:String(err));});}
+// Init
 document.getElementById('loading').textContent=T.loading;
+document.getElementById('placeholder').textContent=T.selectDevice;
+document.getElementById('lbl-device').textContent=T.deviceLabel;
+document.getElementById('config-btn').textContent='\u2699\ufe0f '+T.configBtn;
+document.getElementById('config-btn').addEventListener('click',openConfig);
+document.getElementById('deviceSelect').addEventListener('change',onDeviceChange);
 // ── Dark-mode detection (matches reference ioBroker.schlueter-thermostat) ──
 var DARK_THEME_NAMES=['dark','blue'];
 function applyTheme(isDark){document.body.classList.toggle('dark',!!isDark);}
@@ -741,7 +759,7 @@ for(var i=0;i<targets.length;i++){obs.observe(targets[i],{attributes:true,attrib
 var _lastDark=document.body.classList.contains('dark');
 setInterval(function(){var d=resolveTheme();if(d!==_lastDark){_lastDark=d;applyTheme(d);}},5000);}
 detectTheme();watchTheme();
-initSocket().then(function(){load();setInterval(load,REFRESH_INTERVAL_MS);})
+initSocket().then(function(){setConnStatus(true);load();setInterval(load,REFRESH_INTERVAL_MS);})
 .catch(function(err){showError(err&&err.message?err.message:T.noConn);});
 }());
 </script>
