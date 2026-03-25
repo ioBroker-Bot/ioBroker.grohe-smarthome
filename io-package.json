@@ -1,8 +1,21 @@
 {
   "common": {
     "name": "grohe-smarthome",
-    "version": "0.3.2",
+    "version": "0.3.3",
     "news": {
+      "0.3.3": {
+        "en": "Clamp tapAmount between 50 and 2000 ml.",
+        "de": "Clamp TapAmount zwischen 50 und 2000 ml.",
+        "ru": "Кламп тап Количество между 50 и 2000 мл.",
+        "pt": "BraçadeiraAcumulação entre 50 e 2000 ml.",
+        "nl": "KlemtapAmount tussen 50 en 2000 ml.",
+        "fr": "Bouton de serrageMonter entre 50 et 2000 ml.",
+        "it": "Rubinetto morsetto Importo tra 50 e 2000 ml.",
+        "es": "Grifo de cierre Cantidad entre 50 y 2000 ml.",
+        "pl": "Zacisk TapQuat między 50 a 2000 ml.",
+        "uk": "Клемперовий фіксатор між 50 і 2000 мл.",
+        "zh-cn": "50至2000毫升之间的凸起式凸起(Camp tapAmount)."
+      },
       "0.3.2": {
         "en": "Update Admin Tap for Blue systems\nFix Isues from RepoChecker",
         "de": "Admin Tap für blaue Systeme aktualisieren\nFix Isues von RepoChecker",
@@ -80,19 +93,6 @@
         "pl": "Napraw punkty dla najnowszej repo\nAktualizacja pakietów",
         "uk": "Виправлення точок для останнього репо\nОновлення пакетів",
         "zh-cn": "最新Repo 的固定点\n更新软件包"
-      },
-      "0.2.3": {
-        "en": "Fix no correct messages",
-        "de": "Keine korrekten Nachrichten",
-        "ru": "Не исправляйте правильные сообщения",
-        "pt": "Não corrigir mensagens corretas",
-        "nl": "Geen correcte berichten herstellen",
-        "fr": "Correction d'aucun message correct",
-        "it": "Fissare i messaggi corretti",
-        "es": "Corregir no mensajes correctos",
-        "pl": "Nie naprawiaj poprawnych wiadomości",
-        "uk": "Виправлення не коректних повідомлень",
-        "zh-cn": "校正没有正确的信件"
       }
     },
     "titleLang": {
