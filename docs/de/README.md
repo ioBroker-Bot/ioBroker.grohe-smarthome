@@ -46,7 +46,7 @@ Steuerungen werden **automatisch deaktiviert**, wenn das Gerät als offline geme
 
 **Grohe Blue Home / Professional**
 - Zapfart wählen: Still / Medium / Sprudelnd
-- Menge in ml eingeben
+- Menge in ml eingeben (50–2000 ml, Vielfache von 50)
 - Zapfvorgang auslösen
 - CO₂-Zähler zurücksetzen
 - Filter-Zähler zurücksetzen
@@ -244,7 +244,7 @@ Steuerungen:
 
 ```
 <applianceId>.controls.tapType            (number)  1=still, 2=medium, 3=sprudel
-<applianceId>.controls.tapAmount          (number)  Menge in ml (Vielfache von 50 empfohlen)
+<applianceId>.controls.tapAmount          (number)  Menge in ml (50–2000, Vielfache von 50)
 <applianceId>.controls.dispenseTrigger    (boolean button)
 
 <applianceId>.controls.resetCo2           (boolean button)

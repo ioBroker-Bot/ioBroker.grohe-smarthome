@@ -506,6 +506,7 @@ item.appendChild(lbl);item.appendChild(node);grid.appendChild(item);}
 function _makeBtn(label,cls,handler){var b=document.createElement('button');
 b.type='button';b.className='btn btn-'+cls;b.textContent=label;
 b.addEventListener('click',handler);return b;}
+function clampAmount(v){if(isNaN(v)||v<50)v=50;if(v>2000)v=2000;return Math.round(v/50)*50;}
 var _toastTimer=null;
 function showToast(msg,type){var el=document.getElementById('toast');el.textContent=msg;
 el.className='show'+(type?' '+type:'');clearTimeout(_toastTimer);
@@ -576,16 +577,17 @@ var curType=getVal(s,'controls.tapType');if(curType)tsel.value=curType;
 tsel.addEventListener('change',function(){_setState(NS+'.'+uuid+'.controls.tapType',parseInt(tsel.value,10)||1).catch(function(e){showToast(T.toastError+T.tapType+': '+(e&&e.message?e.message:String(e)),'error');});});
 tg.appendChild(tsel);frow.appendChild(tg);
 var ag=document.createElement('div');ag.className='ctrl-field-group';
-var al=document.createElement('div');al.className='ctrl-field-label';al.textContent=T.tapAmount+' (ml)';ag.appendChild(al);
+var al=document.createElement('div');al.className='ctrl-field-label';al.textContent=T.tapAmount+' (50\u20132000\u202fml)';ag.appendChild(al);
 var ainp=document.createElement('input');ainp.type='number';ainp.className='ctrl-input';
 ainp.min=50;ainp.max=2000;ainp.step=50;ainp.disabled=!online;
-var curAmt=getVal(s,'controls.tapAmount');ainp.value=(curAmt!==null&&curAmt>0)?curAmt:250;
-ainp.addEventListener('change',function(){var v=parseInt(ainp.value,10);_setState(NS+'.'+uuid+'.controls.tapAmount',v>0?v:250).catch(function(e){showToast(T.toastError+T.tapAmount+': '+(e&&e.message?e.message:String(e)),'error');});});
+var curAmt=getVal(s,'controls.tapAmount');ainp.value=(curAmt!==null&&curAmt>=50&&curAmt<=2000)?curAmt:250;
+ainp.addEventListener('change',function(){var v=clampAmount(parseInt(ainp.value,10));ainp.value=v;_setState(NS+'.'+uuid+'.controls.tapAmount',v).catch(function(e){showToast(T.toastError+T.tapAmount+': '+(e&&e.message?e.message:String(e)),'error');});});
 ag.appendChild(ainp);frow.appendChild(ag);sec.appendChild(frow);
 var brow=document.createElement('div');brow.className='ctrl-btns';
 var btnD=_makeBtn('\ud83d\udca7 '+T.btnDispense,'success',function(){_confirm(T.confirmAction,function(){
 _setState(NS+'.'+uuid+'.controls.tapType',parseInt(tsel.value,10)||1).then(function(){
-return _setState(NS+'.'+uuid+'.controls.tapAmount',parseInt(ainp.value,10)||250);}).then(function(){
+var av=clampAmount(parseInt(ainp.value,10)||250);ainp.value=av;
+return _setState(NS+'.'+uuid+'.controls.tapAmount',av);}).then(function(){
 return _sendState(NS+'.'+uuid+'.controls.dispenseTrigger',true,T.btnDispense+': OK');}).catch(function(e){showToast(T.toastError+(e&&e.message?e.message:String(e)),'error');});});});
 var btnCo2=_makeBtn('\u267b\ufe0f '+T.btnResetCo2,'primary',function(){
 _confirm(T.confirmReset+' (CO\u2082)',function(){_sendState(NS+'.'+uuid+'.controls.resetCo2',true,T.btnResetCo2+': OK');});});

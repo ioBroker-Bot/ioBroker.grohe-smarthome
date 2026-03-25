@@ -46,7 +46,7 @@ Controls are **automatically disabled** when the device is reported offline. Eac
 
 **Grohe Blue Home / Professional**
 - Select tap type: Still / Medium / Carbonated
-- Enter amount in ml
+- Enter amount in ml (50–2000 ml, multiples of 50)
 - Trigger dispense
 - Reset CO₂ counter
 - Reset filter counter
@@ -244,7 +244,7 @@ Controls:
 
 ```
 <applianceId>.controls.tapType            (number)  1=still, 2=medium, 3=carbonated
-<applianceId>.controls.tapAmount          (number)  amount in ml (multiples of 50 recommended)
+<applianceId>.controls.tapAmount          (number)  amount in ml (50–2000, multiples of 50)
 <applianceId>.controls.dispenseTrigger    (boolean button)
 
 <applianceId>.controls.resetCo2           (boolean button)
