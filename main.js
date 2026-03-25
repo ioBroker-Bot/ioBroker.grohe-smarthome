@@ -684,7 +684,13 @@ class GroheSmarthome extends utils.Adapter {
 			'level',
 			1,
 		);
-		await this._ensureWritableNum(`${id}.controls`, 'tapAmount', 'Amount in ml (50–2000, multiples of 50)', 'level', 250);
+		await this._ensureWritableNum(
+			`${id}.controls`,
+			'tapAmount',
+			'Amount in ml (50–2000, multiples of 50)',
+			'level',
+			250,
+		);
 		await this._ensureWritableBool(`${id}.controls`, 'dispenseTrigger', 'Dispense', 'button');
 		await this._ensureWritableBool(`${id}.controls`, 'resetCo2', 'Reset CO₂', 'button');
 		await this._ensureWritableBool(`${id}.controls`, 'resetFilter', 'Reset filter', 'button');
